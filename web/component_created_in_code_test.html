@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+Copyright (c) 2013, the Dart project authors.  Please see the AUTHORS file
+for details. All rights reserved. Use of this source code is governed by a
+BSD-style license that can be found in the LICENSE file.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <script src="packages/web_ui/testing/testing.js"></script>
+</head>
+<body>
+  <element name="say-hello">
+    <template>Hello {{name}}!</template>
+    <script type='application/dart' src="component_created_in_code.dart">
+    </script>
+  </element>
+  <say-hello name="component created in html"></say-hello>
+  <script type="application/dart">
+    import 'dart:async';
+    import 'dart:html';
+    import 'package:web_ui/web_ui.dart';
+    import 'component_created_in_code.dart';
+
+    main() {
+      Timer.run(() {
+        var hello = new SayHello()
+          ..host = new DivElement()
+          ..name = 'component created in code';
+
+        // "hello" is the DOM node.
+        // "hello.xtag" is your SayHello object.
+        // We are working on making these be the same object.
+
+        // If the component uses data-binding, we need to make sure the
+        // "lifecycle" methods get called. We are working to make this be
+        // automatic too.
+        var lifecycleCaller = new ComponentItem(hello)..create();
+        document.body.nodes.add(hello.host);
+        lifecycleCaller.insert();
+        window.postMessage('done', '*');
+      });
+    }
+  </script>
+</body>
+</html>
